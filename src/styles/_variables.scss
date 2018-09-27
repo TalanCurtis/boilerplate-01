@@ -1,0 +1,26 @@
+// Colors
+// $darkPurple: #140328;
+
+$success: #73ABA5;
+$main1: #F7E6EA;
+$main2: #B8ABAE;
+$main3: #918789;
+$main4: #6B6465;
+$black: rgb(32, 32, 32);
+$white: rgb(255, 255, 255);
+$warning: rgb(182, 0, 0);
+$test1: rgb(255, 0, 212);
+
+
+
+:export {
+  success: $success;
+  main1: $main1;
+  main2:$main2;
+  main3: $main3;
+  main4:$main4;
+  black: $black;
+  white: $white;
+  warning: $warning;
+  test1: $test1;
+}
