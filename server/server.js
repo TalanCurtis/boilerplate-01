@@ -21,7 +21,7 @@ massive(CONNECTION_STRING).then(db => {console.log('Database up'); app.set('db',
 
 
 // Controller Imports
-const testController = require('./controllers/testController')
+const aTestController = require('./controllers/aTestController')
 
 // Endpoints
 
@@ -30,11 +30,11 @@ app.get('/api/test', (req, res)=>{
     res.status(200).send('Hits')
 });
 
-app.get('/api/test2', testController.testGet);
-app.get('/api/users', testController.getAllUsers);
-app.post('/api/user', testController.createUser);
-app.put('/api/user', testController.updateUser);
-app.delete('/api/user', testController.deleteUser);
+app.get('/api/test2', aTestController.testGet);
+app.get('/api/users', aTestController.getAllUsers);
+app.post('/api/user', aTestController.createUser);
+app.put('/api/user', aTestController.updateUser);
+app.delete('/api/user', aTestController.deleteUser);
 
 // Launch Server
 app.listen(SERVER_PORT, () => (console.log(`boiling on port: ${SERVER_PORT}`)))
