@@ -17,18 +17,24 @@ app.use( express.static( `${__dirname}/../build` ) );
 app.use(bodyParser.json())
 
 // Database Connection
-////  massive(CONNECTION_STRING).then(db => {console.log('Database up'); app.set('db', db)})
+massive(CONNECTION_STRING).then(db => {console.log('Database up'); app.set('db', db)})
 
 
 // Controller Imports
 const testController = require('./controllers/testController')
 
-// Endpoint
+// Endpoints
+
+//// boilerplate endpoints CRUD
 app.get('/api/test', (req, res)=>{
     res.status(200).send('Hits')
-})
-app.get('/api/test2', testController.testGet)
+});
 
+app.get('/api/test2', testController.testGet);
+app.get('/api/users', testController.getAllUsers);
+app.post('/api/user', testController.createUser);
+app.put('/api/user', testController.updateUser);
+app.delete('/api/user', testController.deleteUser);
 
 // Launch Server
 app.listen(SERVER_PORT, () => (console.log(`boiling on port: ${SERVER_PORT}`)))
