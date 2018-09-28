@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import {connect} from 'react-redux'
 
 class AView01 extends Component{
   constructor(props){
@@ -7,13 +8,23 @@ class AView01 extends Component{
     }
   }
 
+  testRedux(){
+    console.log(this.props)
+  }
+
   render(){
     return(
       <div className="AView01">
         AView01 Comp
+        <button onClick={()=>this.testRedux()}>Redux</button>
+        {this.props.aTest.aTest}
       </div>
     )
   }
 }
 
-export default AView01;
+function mapStateToProps(state){
+  return state ;
+} 
+
+export default connect(mapStateToProps)(AView01);
