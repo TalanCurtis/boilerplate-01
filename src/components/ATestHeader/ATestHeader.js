@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import { NavLink } from 'react-router-dom';
+import {connect} from 'react-redux';
+import {updateATest} from '../../redux/reducers/aTest/aTestActions'
 
 class ATestHeader extends Component{
   constructor(props){
@@ -8,14 +10,29 @@ class ATestHeader extends Component{
     }
   }
 
+  test(){
+    console.log(this.state, this.props)
+    this.props.updateATest("Here is my Text")
+  }
+
   render(){
     return(
       <div className="ATestHeader">
         <NavLink to="/"> Home </NavLink>
         <NavLink to="/AView02"> AView02 </NavLink>
+        <button onClick={()=>this.test()}>Redux</button>
       </div>
     )
   }
 }
 
-export default ATestHeader;
+const outputActions = {
+  updateATest
+}
+
+function mapStateToProps(state){
+  return {aTest: state.aTest};
+}
+
+
+export default connect(mapStateToProps, outputActions )(ATestHeader);
