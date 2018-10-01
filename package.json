@@ -2,7 +2,7 @@
   "name": "icon-editor",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://localhost:3010",
+  "proxy": "http://localhost:3025",
   "main": "./server/server.js",
   "dependencies": {
     "axios": "^0.18.0",
