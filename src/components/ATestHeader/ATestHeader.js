@@ -19,8 +19,11 @@ class ATestHeader extends Component{
     return(
       <div className="ATestHeader">
         <NavLink to="/"> Home </NavLink>
+        <NavLink to="/AView01"> AView01 </NavLink>
         <NavLink to="/AView02"> AView02 </NavLink>
+        <NavLink to="/ATestSecretArea"> ATestSecretArea </NavLink>
         <button onClick={()=>this.test()}>Redux</button>
+        <button>Login</button>
       </div>
     )
   }
