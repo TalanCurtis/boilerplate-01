@@ -16,18 +16,105 @@ const { SERVER_PORT, CONNECTION_STRING , SESSION_SECRET, DOMAIN, CLIENT_ID, CLIE
 app.use( express.static( `${__dirname}/../build` ) );
 app.use(bodyParser.json())
 
+app.use(session({
+    secret: SESSION_SECRET,
+    resave: false,
+    saveUninitialized: true
+}));
+// auth 0 override switch req.user to req.session.user
+app.use(checkForSession)
+
+app.use(passport.initialize());
+app.use(passport.session());
+
 // Database Connection
 massive(CONNECTION_STRING).then(db => {console.log('Database up'); app.set('db', db)})
 
+////////////////////////////
+///// AUTH 0 start /////////
+// Setting up passport to use this "strategy"
+// passport.use takes in a Contructor Function ({})
+passport.use(new Auth0Strategy({
+    domain: DOMAIN,
+    clientID: CLIENT_ID,
+    clientSecret: CLIENT_SECRET,
+    callbackURL: CALLBACK_URL,
+    scope: 'openid profile'
+}, function (accessToken, refreshToken, extraParams, profile, done) {
+    // this is where you make a database call
+    // serializeUser get called imediatly after done
+    //done(null, profile)
+    const db = app.get('db');
+
+    const { sub, name, picture } = profile._json;
+
+    db.find_user([sub]).then(dbResponse => {
+        if (dbResponse[0]) {
+            console.log('find_user: ',dbResponse[0])
+            done(null, dbResponse[0].id)
+        } else {
+            // creates user and sends it back
+            db.create_user([name, picture, sub]).then(dbResponse => {
+                console.log('create_user: ',dbResponse[0])
+                done(null, dbResponse[0].id)
+            })
+        }
+    });
+}));
+// serializeUser is gets profile passed down from passport.authenticate done(profile)
+passport.serializeUser((id, done) => {
+    done(null, id)
+});
+
+// deserializeUser 
+// whatever you pass out through profile shows up on a req.user{}
+// this where you 
+passport.deserializeUser((id, done) => {
+    const db = app.get('db');
+    db.find_logged_in_user([id]).then(dbResponse => {
+        console.log('deserializeUser: ',dbResponse[0])
+        done(null, dbResponse[0])
+    })
+});
+
+//// Auth 0  Endpoints
+app.get('/auth', passport.authenticate('auth0'));
+app.get('/auth/callback', passport.authenticate('auth0', {
+    successRedirect: 'http://localhost:3000/#/home'
+}))
+//////// This enpoint checks to see if user is still loged in
+///// put this check on component did mount to see if user still valaid
+app.get('/auth/me', (req, res) => {
+    if (!req.session.user) {
+        console.log('auth me No User: ', req.session.user)
+        res.status(401).send('not logged in')
+    } else {
+        console.log('auth me User: ', req.session.user)
+        res.status(200).send(req.session.user)
+    }
+})
+
+app.get('/logout', (req, res)=>{
+    req.logout();
+    res.status(200).send('log out')
+    // res.redirect('http://localhost:3000/')
+} )
+////////////////////////////
+///// AUTH 0 end /////////
 
 // Controller Imports
 const aTestController = require('./controllers/aTestController')
 
 // Endpoints
-
 //// boilerplate endpoints CRUD
 app.get('/api/test', (req, res)=>{
-    res.status(200).send('Hits')
+    // console.log(req)
+    console.log(req.user)
+    console.log(req.session.user)
+    // const responseObj = {req: req , user: req.user, sessionUser: req.session.user}
+    // let response = JSON.stringify(responseObj)
+    const testResponse = {user:req.user||null, sessionUser:req.session.user||null}
+    res.status(200).send(testResponse)
 });
 
 app.get('/api/test2', aTestController.testGet);
