@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { NavLink } from 'react-router-dom';
+import { withRouter, NavLink } from 'react-router-dom';
 import {connect} from 'react-redux';
 import {updateATest} from '../../redux/reducers/aTest/aTestActions';
 import axios from 'axios';
@@ -18,19 +18,24 @@ class ATestHeader extends Component{
   }
 
   handleLogout(){
-    axios.get('/logout')
+    axios.get('/logout').then((res)=>console.log("handle Logout res:", res.data)).then((red)=>this.props.history.push('/LoggedOut'))
+  }
+  handleAuthMe(){
+    axios.get('/auth/me').then((res)=>console.log("handle AuthMe res:", res.data))
   }
 
   render(){
     return(
       <div className="ATestHeader">
-        <NavLink to="/"> Home </NavLink>
+        <NavLink to="/"> Landing </NavLink>
+        <NavLink to="/Home"> Home </NavLink>
         <NavLink to="/AView01"> AView01 </NavLink>
         <NavLink to="/AView02"> AView02 </NavLink>
         <NavLink to="/ATestSecretArea"> ATestSecretArea </NavLink>
         <button onClick={()=>this.test()}>Redux</button>
         <a href="http://localhost:3025/auth"><button>Login</button></a>
         <button onClick={()=>this.handleLogout()}>LogOut</button>
+        <button onClick={()=>this.handleAuthMe()}>AuthMe</button>
         <button onClick={()=>this.test()}>Test</button>
       </div>
     )
@@ -46,4 +51,4 @@ function mapStateToProps(state){
 }
 
 
-export default connect(mapStateToProps, outputActions )(ATestHeader);
+export default withRouter(connect(mapStateToProps, outputActions )(ATestHeader));

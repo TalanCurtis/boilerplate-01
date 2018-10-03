@@ -21,8 +21,18 @@ app.use(session({
     resave: false,
     saveUninitialized: true
 }));
-// auth 0 override switch req.user to req.session.user
+
+//// checkForSession is a dummy User for development to sub in for Auth0. 
+//// useAuth0 variable toggles between checkForSession or useAuth0
 app.use(checkForSession)
+function auth0SessionSwitch(req){
+    const useAuth0 = true
+    if (useAuth0) {
+        return user = req.user
+    } else {
+        return req.session.user
+    }
+}
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -33,7 +43,7 @@ massive(CONNECTION_STRING).then(db => {console.log('Database up'); app.set('db',
 ////////////////////////////
 ///// AUTH 0 start /////////
 // Setting up passport to use this "strategy"
-// passport.use takes in a Contructor Function ({})
+// passport.use takes in a Constructor Function ({})
 passport.use(new Auth0Strategy({
     domain: DOMAIN,
     clientID: CLIENT_ID,
@@ -42,7 +52,7 @@ passport.use(new Auth0Strategy({
     scope: 'openid profile'
 }, function (accessToken, refreshToken, extraParams, profile, done) {
     // this is where you make a database call
-    // serializeUser get called imediatly after done
+    // serializeUser gets called immediately after done
     //done(null, profile)
     const db = app.get('db');
 
@@ -80,17 +90,17 @@ passport.deserializeUser((id, done) => {
 //// Auth 0  Endpoints
 app.get('/auth', passport.authenticate('auth0'));
 app.get('/auth/callback', passport.authenticate('auth0', {
-    successRedirect: 'http://localhost:3000/#/home'
+    successRedirect: 'http://localhost:3000/home'
 }))
-//////// This enpoint checks to see if user is still loged in
-///// put this check on component did mount to see if user still valaid
+//////// This endpoint checks to see if user is still logged in
+///// put this check on component did mount to see if user still valid
 app.get('/auth/me', (req, res) => {
-    if (!req.session.user) {
-        console.log('auth me No User: ', req.session.user)
+    if (!auth0SessionSwitch(req)) {
+        console.log('auth me No User: ', auth0SessionSwitch(req))
         res.status(401).send('not logged in')
     } else {
-        console.log('auth me User: ', req.session.user)
-        res.status(200).send(req.session.user)
+        console.log('auth me User: ', auth0SessionSwitch(req))
+        res.status(200).send(auth0SessionSwitch(req))
     }
 })
 
@@ -108,11 +118,6 @@ const aTestController = require('./controllers/aTestController')
 // Endpoints
 //// boilerplate endpoints CRUD
 app.get('/api/test', (req, res)=>{
-    // console.log(req)
-    console.log(req.user)
-    console.log(req.session.user)
-    // const responseObj = {req: req , user: req.user, sessionUser: req.session.user}
-    // let response = JSON.stringify(responseObj)
     const testResponse = {user:req.user||null, sessionUser:req.session.user||null}
     res.status(200).send(testResponse)
 });
