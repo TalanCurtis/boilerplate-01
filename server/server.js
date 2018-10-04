@@ -12,6 +12,9 @@ const app = express()
 // Destructuring .env file
 const { SERVER_PORT, CONNECTION_STRING , SESSION_SECRET, DOMAIN, CLIENT_ID, CLIENT_SECRET, CALLBACK_URL} = process.env
 
+// Database Connection
+massive(CONNECTION_STRING).then(db => {console.log('Database up'); app.set('db', db)})
+
 // Top Level middleware
 app.use( express.static( `${__dirname}/../build` ) );
 app.use(bodyParser.json())
@@ -36,9 +39,6 @@ function auth0SessionSwitch(req){
 
 app.use(passport.initialize());
 app.use(passport.session());
-
-// Database Connection
-massive(CONNECTION_STRING).then(db => {console.log('Database up'); app.set('db', db)})
 
 ////////////////////////////
 ///// AUTH 0 start /////////
