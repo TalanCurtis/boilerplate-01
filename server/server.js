@@ -99,8 +99,9 @@ app.get('/auth/me', (req, res) => {
         console.log('auth me No User: ', auth0SessionSwitch(req))
         res.status(401).send('not logged in')
     } else {
-        console.log('auth me User: ', auth0SessionSwitch(req))
-        res.status(200).send(auth0SessionSwitch(req))
+        console.log('auth me User: ', auth0SessionSwitch(req).user_name)
+        const userObj = {userName: auth0SessionSwitch(req).user_name, userImage: auth0SessionSwitch(req).img} 
+        res.status(200).send(userObj)
     }
 })
 

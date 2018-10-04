@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { withRouter, NavLink } from 'react-router-dom';
 import {connect} from 'react-redux';
 import {updateATest} from '../../redux/reducers/aTest/aTestActions';
+import {clearUser} from '../../redux/reducers/user/userActions';
 import axios from 'axios';
 
 class ATestHeader extends Component{
@@ -18,7 +19,7 @@ class ATestHeader extends Component{
   }
 
   handleLogout(){
-    axios.get('/logout').then((res)=>console.log("handle Logout res:", res.data)).then((red)=>this.props.history.push('/LoggedOut'))
+    axios.get('/logout').then(()=>{this.props.clearUser(); this.props.history.push('/LoggedOut')})
   }
   handleAuthMe(){
     axios.get('/auth/me').then((res)=>console.log("handle AuthMe res:", res.data))
@@ -33,21 +34,26 @@ class ATestHeader extends Component{
         <NavLink to="/AView02"> AView02 </NavLink>
         <NavLink to="/ATestSecretArea"> ATestSecretArea </NavLink>
         <button onClick={()=>this.test()}>Redux</button>
-        <a href="http://localhost:3025/auth"><button>Login</button></a>
+        <a href={process.env.REACT_APP_LOGIN}><button>Login</button></a>
         <button onClick={()=>this.handleLogout()}>LogOut</button>
         <button onClick={()=>this.handleAuthMe()}>AuthMe</button>
         <button onClick={()=>this.test()}>Test</button>
+        {this.props.user.userName? "logged in": "logged out"}
       </div>
     )
   }
 }
 
 const outputActions = {
-  updateATest
+  updateATest,
+  clearUser
 }
 
 function mapStateToProps(state){
-  return {aTest: state.aTest};
+  return {
+    aTest: state.aTest,
+    user: state.user,
+  };
 }
 
 
