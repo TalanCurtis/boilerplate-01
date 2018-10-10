@@ -95,6 +95,7 @@ app.get('/auth/callback', passport.authenticate('auth0', {
 //////// This endpoint checks to see if user is still logged in
 ///// put this check on component did mount to see if user still valid
 app.get('/auth/me', (req, res) => {
+    console.log("req", req.user);
     if (!auth0SessionSwitch(req)) {
         console.log('auth me No User: ', auth0SessionSwitch(req))
         res.status(401).send('not logged in')

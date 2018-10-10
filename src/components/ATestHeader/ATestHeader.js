@@ -38,7 +38,14 @@ class ATestHeader extends Component{
         <button onClick={()=>this.handleLogout()}>LogOut</button>
         <button onClick={()=>this.handleAuthMe()}>AuthMe</button>
         <button onClick={()=>this.test()}>Test</button>
-        {this.props.user.userName? "logged in": "logged out"}
+        {this.props.user.userName? 
+         <div style={{display:"flex"}}>
+          <div>
+            {`user ${this.props.user.userName}`}
+          </div>
+           <img src={this.props.user.userImage} alt="profile pic" style={{height:"30px"}}/>
+         </div>
+         : "logged out"}
       </div>
     )
   }
